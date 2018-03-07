@@ -4,7 +4,7 @@ Description: >
 Parameters:
   S3LifecycleExpirationInDays:
     Type: Number
-    Default: 360
+    Default: 400
 Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
