@@ -1,10 +1,14 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
 Description: >
   Initial settings for aws account.
 Parameters:
   S3LifecycleExpirationInDays:
     Type: Number
     Default: 400
+  EmailAddress:
+    Type: String
 Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
@@ -44,3 +48,45 @@ Resources:
       IsLogging: true
       IsMultiRegionTrail: true
       S3BucketName: !Ref S3Bucket
+    DependsOn:
+      - S3Bucket
+      - S3BucketPolicy
+
+  GuardDuty:
+    Type: AWS::GuardDuty::Detector
+    Properties:
+      Enable: true
+      FindingPublishingFrequency: SIX_HOURS
+
+  SNS:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Endpoint: !Ref EmailAddress
+          Protocol: email
+
+  SNSPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sns:Publish
+            Resource: '*'
+      Topics:
+        - !Ref SNS
+
+  GuardDutyEvent:
+    Type: AWS::Events::Rule
+    Properties:
+      EventPattern:
+        source:
+          - aws.guardduty
+        detail-type:
+          - GuardDuty Finding
+      State: ENABLED
+      Targets:
+        - Id: sns
+          Arn: !Ref SNS

@@ -3,25 +3,19 @@
 Initialize the aws account.
 
 - Cloudtrail
+- GuardDuty
 
 ## Usage
 
-`cloudformation.yaml` is Cloudformation template file.  
+`template.yaml` is Cloudformation template file.  
 Please execute Cloudformation.  
   
 If you use aws-cli, you can use `make` command.
 
 ```
 $ make
-create-change-set:   Create Change-Set
-create-stack:        Create Stack
-delete-stack:        Delete Stack
-describe-change-set: Describe Change-set
-describe-stacks:     Describe Stacks
-execute-change-set:  Execute Change-set
-help:                Show help
-update-stack:        Update Stack
-validate:            Validate
+deploy:            Deploy
+help:              Show help
 
-$ make create-stack
+$ EmailAddress='notice@example.com' make deploy
 ```
